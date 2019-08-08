@@ -653,6 +653,7 @@ public final class CraftingCPUCluster implements IAECluster, ICraftingCPU
 								continue;
 							}
 
+							//this fix need for using Advanced Pattern in Advanced AE for GT. Pattern have 20 slots for items and need using another container.
 							if(details.isCraftable())
 								ic = new InventoryCrafting( new ContainerNull(), 3, 3 );
 							else

@@ -20,12 +20,11 @@
 
 ## About
 
->A Mod about Matter, Energy and using them to conquer the world..
-
-This project is to fix some bugs in Applied Energistics 2 that are no longer maintained for version 1.7.10. This project will also be discontinued after the vast majority of players have transitioned to over MC1.7.10.
+This project have change for using Advanced AE for GT Mod. Fix in file [CraftingCPUCluster.java](https://github.com/Lyohha/Applied-Enerhistics-2-Unofficial-rv3-1.7.10/blob/master/src/main/java/appeng/me/cluster/implementations/CraftingCPUCluster.java) (line: 656)
 
 ## Contacts
 
+* [Advanced AE for GT](https://github.com/Lyohha/AdvancedAEforGT)
 * [Website](http://ae-mod.info/) _This website will contain nothing about this unofficial version._
 * [IRC #appliedenergistics on esper.net](http://webchat.esper.net/?channels=appliedenergistics&prompt=1)
 * [Original GitHub](https://github.com/xsun2001/Applied-Energistics-2-Unofficial)
