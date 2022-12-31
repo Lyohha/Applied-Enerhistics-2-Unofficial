@@ -132,14 +132,24 @@ public class NEIWorldCraftingHandler implements ICraftingHandler, IUsageHandler
 	}
 
 	@Override
-	public List<String> handleTooltip( final GuiRecipe gui, final List<String> currentToolTip, final int recipe )
-	{
-		return currentToolTip;
+	public List<String> handleTooltip(GuiRecipe<?> gui, List<String> currenttip, int recipe) {
+		return currenttip;
 	}
 
+//	@Override
+//	public List<String> handleTooltip( final GuiRecipe gui, final List<String> currentToolTip, final int recipe )
+//	{
+//		return currentToolTip;
+//	}
+//
+//	@Override
+//	public List<String> handleItemTooltip( final GuiRecipe gui, final ItemStack stack, final List<String> currentToolTip, final int recipe )
+//	{
+//		return currentToolTip;
+//	}
+
 	@Override
-	public List<String> handleItemTooltip( final GuiRecipe gui, final ItemStack stack, final List<String> currentToolTip, final int recipe )
-	{
+	public List<String> handleItemTooltip(final GuiRecipe<?> gui, final ItemStack stack, final List<String> currentToolTip, final int recipe) {
 		return currentToolTip;
 	}
 

@@ -16,34 +16,87 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-apply plugin: 'forge'
-
-apply from: 'gradle/scripts/dependencies.gradle'
-apply from: 'gradle/scripts/artifacts.gradle'
-apply from: 'gradle/scripts/autoinstallruntime.gradle'
-apply from: 'gradle/scripts/integration.gradle'
-apply from: 'gradle/scripts/optional.gradle'
 
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-
         maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            name 'forge'
+            url 'https://maven.minecraftforge.net'
         }
-
+		maven {
+            name 'Scala CI dependencies'
+            url 'https://repo1.maven.org/maven2/'
+        }
         maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        maven {
+            name 'jitpack'
+            url 'https://jitpack.io'
+        }
+        maven { // GalacticGreg, YAMCore,..
+            name 'UsrvDE'
+            url = "http://jenkins.usrv.eu:8081/nexus/content/groups/public/"
+        }
     }
-
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2.13'
     }
 }
+
+repositories {
+
+    maven {
+        name 'Overmind forge repo mirror'
+        url 'https://gregtech.overminddl1.com/'
+    }
+	
+	maven {
+        name 'GTNH Maven'
+        url 'http://jenkins.usrv.eu:8081/nexus/content/groups/public/'
+         allowInsecureProtocol
+    }
+    maven {
+        name 'ic2'
+        url 'https://maven.ic2.player.to/'
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    maven {
+        name 'MM repo'
+        url 'https://maven.k-4u.nl/'
+    }
+    maven {
+        name 'OpenComputers Repo'
+        url 'https://maven.cil.li/'
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    maven {
+        url 'https://cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+
+}
+
+configurations {
+    mods
+}
+
+
+apply plugin: 'forge'
+apply plugin: 'idea'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -51,6 +104,34 @@ targetCompatibility = JavaVersion.VERSION_1_8
 version = aeversion + "-" + aechannel + "-" + aebuild
 group = aegroup
 archivesBaseName = aebasename
+
+
+
+dependencies {
+
+	
+	compile('com.github.GTNewHorizons:CodeChickenLib:1.1.5.5:dev')
+    compile('com.github.GTNewHorizons:NotEnoughItems:2.2.33-GTNH:dev')
+    compile('curse.maven:cofh-core-69162:2388751')
+
+    compile('com.github.GTNewHorizons:BuildCraft:7.1.27:dev') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:ForgeMultipart:1.2.8:dev') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:GT5-Unofficial:5.09.41.18:dev') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:Jabba:1.2.21:dev') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:inventory-tweaks:1.5.15:api') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:OpenComputers:1.7.5.32-GTNH:api') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:waila:1.5.21:api') {transitive = false}
+    compileOnly('com.github.GTNewHorizons:Railcraft:9.13.10:api') {transitive = false}
+
+    compileOnly('net.industrial-craft:industrialcraft-2:2.2.828-experimental:api')
+    compileOnly('curse.maven:minefactory-reloaded-66672:2366150')
+    compileOnly('pneumaticCraft:PneumaticCraft-1.7.10:1.12.7-152:api') {transitive = false}
+    compileOnly('curse.maven:better-storage-232919:2731636')
+    compileOnly('api:immibis:1')
+
+    testCompile('junit:junit:4.12')
+}
+
 
 // If TeamCity is running this build, lets set the version info
 if (hasProperty("teamcity")) {
@@ -118,4 +199,54 @@ processResources {
         include 'mcmod.info'
         expand 'version': project.version, 'mcversion': minecraft_version
     }
+}
+
+task myJavadocs(type: Javadoc) {
+    source = sourceSets.api.java
+    include "appeng/api/**"
+
+    classpath = configurations.compile
+}
+
+task javadocJar(type: Jar, dependsOn: myJavadocs) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc/'
+}
+
+task sourceJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task devJar(type: Jar) {
+
+    manifest {
+        attributes 'FMLCorePlugin': 'appeng.transformer.AppEngCore'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+
+    from(sourceSets.main.output) {
+        include "appeng/**"
+        include "assets/**"
+        include 'mcmod.info'
+    }
+
+    classifier = 'dev'
+}
+
+task apiJar(type: Jar) {
+    from sourceSets.api.java
+    include "appeng/api/**"
+
+    from sourceSets.main.output
+    include "appeng/api/**"
+
+    classifier = 'api'
+}
+
+artifacts {
+    archives devJar
+    archives apiJar
+    archives javadocJar
+    archives sourceJar
 }
