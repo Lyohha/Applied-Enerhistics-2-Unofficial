@@ -16,24 +16,9 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.tile.events;
+package appeng.tile.inventory;
 
-
-public enum TileEventType
+public interface IAEAppEngFluidHandler extends IAEAppEngInventory
 {
-	TICK,
-
-	WORLD_NBT_READ, WORLD_NBT_WRITE,
-
-	/**
-	 * Methods annotated with this need to return a boolean
-	 */
-	NETWORK_READ,
-
-	NETWORK_WRITE,
-
-	/**
-	 * For Universal slot render
-	 */
-	UNIVERSAL_NBT_READ,	UNIVERSAL_NBT_WRITE
+	void markFluidUpdate();
 }

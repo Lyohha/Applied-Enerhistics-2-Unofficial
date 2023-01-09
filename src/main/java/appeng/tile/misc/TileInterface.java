@@ -40,12 +40,11 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.DimensionalCoord;
 import appeng.api.util.IConfigManager;
-import appeng.helpers.DualityInterface;
-import appeng.helpers.IInterfaceHost;
-import appeng.helpers.IPriorityHost;
+import appeng.helpers.*;
 import appeng.tile.TileEvent;
 import appeng.tile.events.TileEventType;
-import appeng.tile.grid.AENetworkInvTile;
+import appeng.tile.grid.AENetworkUniversalTile;
+import appeng.tile.inventory.IAEUniversalFluidHandler;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.inv.IInventoryDestination;
@@ -62,11 +61,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 
-public class TileInterface extends AENetworkInvTile
-		implements IGridTickable, ITileStorageMonitorable, IStorageMonitorable, IInventoryDestination, IInterfaceHost, IPriorityHost
+public class TileInterface extends AENetworkUniversalTile
+		implements IGridTickable, ITileStorageMonitorable, IStorageMonitorable, IInventoryDestination, IUniversalInterfaceHost, IPriorityHost
 {
 
-	private final DualityInterface duality = new DualityInterface( this.getProxy(), this );
+//	private final DualityInterface duality = new DualityInterface( this.getProxy(), this );
+	private final UniversalInterface duality = new UniversalInterface( this.getProxy(), this );
 	private ForgeDirection pointAt = ForgeDirection.UNKNOWN;
 
 	@MENetworkEventSubscribe
@@ -123,6 +123,13 @@ public class TileInterface extends AENetworkInvTile
 	public void markDirty()
 	{
 		this.duality.markDirty();
+	}
+
+
+	@Override
+	public boolean isItemValidForSlot( final int i, final ItemStack itemstack )
+	{
+		return this.getInternalInventory().isItemValidForSlot(i, itemstack);
 	}
 
 	@Override
@@ -236,7 +243,7 @@ public class TileInterface extends AENetworkInvTile
 	}
 
 	@Override
-	public DualityInterface getInterfaceDuality()
+	public UniversalInterface getInterfaceDuality()
 	{
 		return this.duality;
 	}
@@ -321,5 +328,10 @@ public class TileInterface extends AENetworkInvTile
 	public void setPriority( final int newValue )
 	{
 		this.duality.setPriority( newValue );
+	}
+
+	@Override
+	public IAEUniversalFluidHandler getInternalFluidHandler() {
+		return duality.getFluidStorage();
 	}
 }

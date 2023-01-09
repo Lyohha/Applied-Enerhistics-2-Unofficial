@@ -67,7 +67,7 @@ public class BlockInterface extends AEBaseTileBlock
 		{
 			if( Platform.isServer() )
 			{
-				Platform.openGUI( p, tg, ForgeDirection.getOrientation( side ), GuiBridge.GUI_INTERFACE );
+				Platform.openGUI( p, tg, ForgeDirection.getOrientation( side ), GuiBridge.GUI_UNIVERSAL_INTERFACE );
 			}
 			return true;
 		}

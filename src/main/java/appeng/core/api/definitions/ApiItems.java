@@ -30,6 +30,7 @@ import appeng.debug.ToolReplicatorCard;
 import appeng.items.materials.MaterialType;
 import appeng.items.misc.ItemCrystalSeed;
 import appeng.items.misc.ItemEncodedPattern;
+import appeng.items.misc.ItemFluid;
 import appeng.items.misc.ItemPaintBall;
 import appeng.items.parts.ItemFacade;
 import appeng.items.storage.ItemBasicStorageCell;
@@ -102,6 +103,9 @@ public final class ApiItems implements IItems
 	private final IItemDefinition toolDebugCard;
 	private final IItemDefinition toolReplicatorCard;
 
+	// fluid for universal interface
+	private final IItemDefinition fluid;
+
 	public ApiItems( final DefinitionConstructor constructor )
 	{
 		this.certusQuartzAxe = constructor.registerItemDefinition( new ToolQuartzAxe( AEFeature.CertusQuartzTools ) );
@@ -156,6 +160,8 @@ public final class ApiItems implements IItems
 		this.toolMeteoritePlacer = constructor.registerItemDefinition( new ToolMeteoritePlacer() );
 		this.toolDebugCard = constructor.registerItemDefinition( new ToolDebugCard() );
 		this.toolReplicatorCard = constructor.registerItemDefinition( new ToolReplicatorCard() );
+
+		this.fluid = constructor.registerItemDefinition(new ItemFluid());
 	}
 
 	@Override
@@ -378,6 +384,12 @@ public final class ApiItems implements IItems
 	public AEColoredItemDefinition coloredLumenPaintBall()
 	{
 		return this.coloredLumenPaintBall;
+	}
+
+	@Override
+	public IItemDefinition getFluid()
+	{
+		return this.fluid;
 	}
 
 	public IItemDefinition paintBall()

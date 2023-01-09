@@ -46,6 +46,7 @@ import appeng.container.implementations.*;
 import appeng.core.stats.Achievements;
 import appeng.helpers.IInterfaceHost;
 import appeng.helpers.IPriorityHost;
+import appeng.helpers.IUniversalInterfaceHost;
 import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.items.contents.QuartzKnifeObj;
 import appeng.parts.automation.PartFormationPlane;
@@ -116,6 +117,8 @@ public enum GuiBridge implements IGuiHandler
 	GUI_CONDENSER( ContainerCondenser.class, TileCondenser.class, GuiHostType.WORLD, null ),
 
 	GUI_INTERFACE( ContainerInterface.class, IInterfaceHost.class, GuiHostType.WORLD, SecurityPermissions.BUILD ),
+
+	GUI_UNIVERSAL_INTERFACE( ContainerUniversalInterface.class, IUniversalInterfaceHost.class, GuiHostType.WORLD, SecurityPermissions.BUILD ),
 
 	GUI_BUS( ContainerUpgradeable.class, IUpgradeableHost.class, GuiHostType.WORLD, SecurityPermissions.BUILD ),
 

@@ -106,4 +106,7 @@ public interface IItems
 	AEColoredItemDefinition coloredPaintBall();
 
 	AEColoredItemDefinition coloredLumenPaintBall();
+
+	// fluid
+	IItemDefinition getFluid();
 }

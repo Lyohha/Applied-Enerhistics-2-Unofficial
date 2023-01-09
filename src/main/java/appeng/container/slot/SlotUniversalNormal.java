@@ -16,24 +16,28 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.tile.events;
+package appeng.container.slot;
 
 
-public enum TileEventType
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+
+
+public class SlotUniversalNormal extends AppEngSlot
 {
-	TICK,
+	protected IInventory inv;
+	protected int slot;
 
-	WORLD_NBT_READ, WORLD_NBT_WRITE,
+	public SlotUniversalNormal(final IInventory inv, final int slot, final int xPos, final int yPos )
+	{
+		super( inv, slot, xPos, yPos );
+		this.inv = inv;
+		this.slot = slot;
+	}
 
-	/**
-	 * Methods annotated with this need to return a boolean
-	 */
-	NETWORK_READ,
-
-	NETWORK_WRITE,
-
-	/**
-	 * For Universal slot render
-	 */
-	UNIVERSAL_NBT_READ,	UNIVERSAL_NBT_WRITE
+	@Override
+	public boolean isItemValid( final ItemStack i )
+	{
+		return this.inv.isItemValidForSlot(this.slot, i);
+	}
 }

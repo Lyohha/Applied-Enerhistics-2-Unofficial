@@ -188,6 +188,11 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 			{
 				return null;
 			}
+
+			for( final AETileEventHandler h : this.getHandlerListFor( TileEventType.UNIVERSAL_NBT_WRITE ) )
+			{
+				h.writeToNBT( this, data );
+			}
 		}
 		catch( final Throwable t )
 		{
@@ -222,6 +227,11 @@ public class AEBaseTile extends TileEntity implements IOrientable, ICommonTile, 
 			if( this.readFromStream( stream ) )
 			{
 				this.markForUpdate();
+			}
+
+			for( final AETileEventHandler h : this.getHandlerListFor( TileEventType.UNIVERSAL_NBT_READ ) )
+			{
+				h.readFromNBT( this, pkt.func_148857_g() );
 			}
 		}
 	}

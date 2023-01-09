@@ -16,24 +16,28 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.tile.events;
+package appeng.helpers;
 
 
-public enum TileEventType
+import appeng.api.implementations.IUpgradeableHost;
+import appeng.api.networking.crafting.ICraftingProvider;
+import appeng.api.networking.crafting.ICraftingRequester;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.EnumSet;
+
+
+public interface IUniversalInterfaceHost extends ICraftingProvider, IUpgradeableHost, ICraftingRequester
 {
-	TICK,
 
-	WORLD_NBT_READ, WORLD_NBT_WRITE,
+	UniversalInterface getInterfaceDuality();
 
-	/**
-	 * Methods annotated with this need to return a boolean
-	 */
-	NETWORK_READ,
+	EnumSet<ForgeDirection> getTargets();
 
-	NETWORK_WRITE,
+	TileEntity getTileEntity();
 
-	/**
-	 * For Universal slot render
-	 */
-	UNIVERSAL_NBT_READ,	UNIVERSAL_NBT_WRITE
+	void saveChanges();
+
+	void markFluidUpdate();
 }

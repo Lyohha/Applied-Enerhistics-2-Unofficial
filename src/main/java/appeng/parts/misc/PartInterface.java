@@ -42,12 +42,11 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.IConfigManager;
 import appeng.client.texture.CableBusTextures;
 import appeng.core.sync.GuiBridge;
-import appeng.helpers.DualityInterface;
-import appeng.helpers.IInterfaceHost;
-import appeng.helpers.IPriorityHost;
-import appeng.helpers.Reflected;
+import appeng.helpers.*;
 import appeng.parts.PartBasicState;
+import appeng.parts.PartUniversalState;
 import appeng.tile.inventory.IAEAppEngInventory;
+import appeng.tile.inventory.IAEUniversalFluidHandler;
 import appeng.tile.inventory.InvOperation;
 import appeng.util.Platform;
 import appeng.util.inv.IInventoryDestination;
@@ -70,11 +69,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 
-public class PartInterface extends PartBasicState
-		implements IGridTickable, IStorageMonitorable, IInventoryDestination, IInterfaceHost, ISidedInventory, IAEAppEngInventory, ITileStorageMonitorable, IPriorityHost
+public class PartInterface extends PartUniversalState
+		implements IGridTickable, IStorageMonitorable, IInventoryDestination, IUniversalInterfaceHost, ISidedInventory, IAEAppEngInventory, ITileStorageMonitorable, IPriorityHost
 {
 
-	private final DualityInterface duality = new DualityInterface( this.getProxy(), this );
+//	private final DualityInterface duality = new DualityInterface( this.getProxy(), this );
+	private final UniversalInterface duality = new UniversalInterface( this.getProxy(), this );
 
 	@Reflected
 	public PartInterface( final ItemStack is )
@@ -207,7 +207,7 @@ public class PartInterface extends PartBasicState
 
 		if( Platform.isServer() )
 		{
-			Platform.openGUI( p, this.getTileEntity(), this.getSide(), GuiBridge.GUI_INTERFACE );
+			Platform.openGUI( p, this.getTileEntity(), this.getSide(), GuiBridge.GUI_UNIVERSAL_INTERFACE );
 		}
 
 		return true;
@@ -352,7 +352,7 @@ public class PartInterface extends PartBasicState
 	}
 
 	@Override
-	public DualityInterface getInterfaceDuality()
+	public UniversalInterface getInterfaceDuality()
 	{
 		return this.duality;
 	}
@@ -421,5 +421,10 @@ public class PartInterface extends PartBasicState
 	public void setPriority( final int newValue )
 	{
 		this.duality.setPriority( newValue );
+	}
+
+	@Override
+	public IAEUniversalFluidHandler getInternalFluidHandler() {
+		return duality.getFluidStorage();
 	}
 }

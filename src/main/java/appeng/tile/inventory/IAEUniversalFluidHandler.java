@@ -16,24 +16,23 @@
  * along with Applied Energistics 2.  If not, see <http://www.gnu.org/licenses/lgpl>.
  */
 
-package appeng.tile.events;
+package appeng.tile.inventory;
 
 
-public enum TileEventType
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+
+public interface IAEUniversalFluidHandler extends IFluidHandler
 {
-	TICK,
+	void writeFluidToNBT(final NBTTagCompound data);
 
-	WORLD_NBT_READ, WORLD_NBT_WRITE,
+	void readFluidFromNBT(final NBTTagCompound data);
 
-	/**
-	 * Methods annotated with this need to return a boolean
-	 */
-	NETWORK_READ,
+	FluidStack drain(int slot, int maxDrain, boolean doDrain);
 
-	NETWORK_WRITE,
+	int fill(int slot, FluidStack resource, boolean doFill);
 
-	/**
-	 * For Universal slot render
-	 */
-	UNIVERSAL_NBT_READ,	UNIVERSAL_NBT_WRITE
+	FluidTankInfo getTankInfo(int slot);
 }
