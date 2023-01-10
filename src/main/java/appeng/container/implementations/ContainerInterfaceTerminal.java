@@ -27,9 +27,7 @@ import appeng.api.networking.security.IActionHost;
 import appeng.container.AEBaseContainer;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketCompressedNBT;
-import appeng.helpers.DualityInterface;
-import appeng.helpers.IInterfaceHost;
-import appeng.helpers.InventoryAction;
+import appeng.helpers.*;
 import appeng.items.misc.ItemEncodedPattern;
 import appeng.parts.misc.PartInterface;
 import appeng.parts.reporting.PartInterfaceTerminal;
@@ -62,6 +60,7 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 
 	private static long autoBase = Long.MIN_VALUE;
 	private final Map<IInterfaceHost, InvTracker> diList = new HashMap<IInterfaceHost, InvTracker>();
+	private final Map<IUniversalInterfaceHost, InvTracker> uiList = new HashMap<IUniversalInterfaceHost, InvTracker>();
 	private final Map<Long, InvTracker> byId = new HashMap<Long, InvTracker>();
 	private IGrid grid;
 	private NBTTagCompound data = new NBTTagCompound();
@@ -106,24 +105,40 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 				{
 					if( gn.isActive() )
 					{
-						final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
-						if( ih.getInterfaceDuality().getConfigManager().getSetting( Settings.INTERFACE_TERMINAL ) == YesNo.NO )
+						if(gn.getMachine() instanceof IUniversalInterfaceHost)
 						{
-							continue;
-						}
+							final IUniversalInterfaceHost ih = (IUniversalInterfaceHost) gn.getMachine();
+							if (ih.getInterfaceDuality().getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.NO) {
+								continue;
+							}
 
-						final InvTracker t = this.diList.get( ih );
+							final InvTracker t = this.uiList.get(ih);
 
-						if( t == null )
-						{
-							missing = true;
+							if (t == null) {
+								missing = true;
+							} else {
+								final UniversalInterface dual = ih.getInterfaceDuality();
+								if (!t.unlocalizedName.equals(dual.getTermName())) {
+									missing = true;
+								}
+							}
 						}
 						else
 						{
-							final DualityInterface dual = ih.getInterfaceDuality();
-							if( !t.unlocalizedName.equals( dual.getTermName() ) )
-							{
+							final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
+							if (ih.getInterfaceDuality().getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.NO) {
+								continue;
+							}
+
+							final InvTracker t = this.diList.get(ih);
+
+							if (t == null) {
 								missing = true;
+							} else {
+								final DualityInterface dual = ih.getInterfaceDuality();
+								if (!t.unlocalizedName.equals(dual.getTermName())) {
+									missing = true;
+								}
 							}
 						}
 
@@ -135,24 +150,40 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 				{
 					if( gn.isActive() )
 					{
-						final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
-						if( ih.getInterfaceDuality().getConfigManager().getSetting( Settings.INTERFACE_TERMINAL ) == YesNo.NO )
+						if(gn.getMachine() instanceof IUniversalInterfaceHost)
 						{
-							continue;
-						}
+							final IUniversalInterfaceHost ih = (IUniversalInterfaceHost) gn.getMachine();
+							if (ih.getInterfaceDuality().getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.NO) {
+								continue;
+							}
 
-						final InvTracker t = this.diList.get( ih );
+							final InvTracker t = this.uiList.get(ih);
 
-						if( t == null )
-						{
-							missing = true;
+							if (t == null) {
+								missing = true;
+							} else {
+								final UniversalInterface dual = ih.getInterfaceDuality();
+								if (!t.unlocalizedName.equals(dual.getTermName())) {
+									missing = true;
+								}
+							}
 						}
 						else
 						{
-							final DualityInterface dual = ih.getInterfaceDuality();
-							if( !t.unlocalizedName.equals( dual.getTermName() ) )
-							{
+							final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
+							if (ih.getInterfaceDuality().getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.NO) {
+								continue;
+							}
+
+							final InvTracker t = this.diList.get(ih);
+
+							if (t == null) {
 								missing = true;
+							} else {
+								final DualityInterface dual = ih.getInterfaceDuality();
+								if (!t.unlocalizedName.equals(dual.getTermName())) {
+									missing = true;
+								}
 							}
 						}
 
@@ -162,13 +193,25 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 			}
 		}
 
-		if( total != this.diList.size() || missing )
+		if( total != (this.diList.size() + this.uiList.size()) || missing )
 		{
 			this.regenList( this.data );
 		}
 		else
 		{
 			for( final Entry<IInterfaceHost, InvTracker> en : this.diList.entrySet() )
+			{
+				final InvTracker inv = en.getValue();
+				for( int x = 0; x < inv.server.getSizeInventory(); x++ )
+				{
+					if( this.isDifferent( inv.server.getStackInSlot( x ), inv.client.getStackInSlot( x ) ) )
+					{
+						this.addItems( this.data, inv, x, 1 );
+					}
+				}
+			}
+
+			for( final Entry<IUniversalInterfaceHost, InvTracker> en : this.uiList.entrySet() )
 			{
 				final InvTracker inv = en.getValue();
 				for( int x = 0; x < inv.server.getSizeInventory(); x++ )
@@ -315,6 +358,7 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 	{
 		this.byId.clear();
 		this.diList.clear();
+		this.uiList.clear();
 
 		final IActionHost host = this.getActionHost();
 		if( host != null )
@@ -324,21 +368,41 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 			{
 				for( final IGridNode gn : this.grid.getMachines( TileInterface.class ) )
 				{
-					final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
-					final DualityInterface dual = ih.getInterfaceDuality();
-					if( gn.isActive() && dual.getConfigManager().getSetting( Settings.INTERFACE_TERMINAL ) == YesNo.YES )
+					if(gn.getMachine() instanceof IUniversalInterfaceHost)
 					{
-						this.diList.put( ih, new InvTracker( dual, dual.getPatterns(), dual.getTermName() ) );
+						final IUniversalInterfaceHost ih = (IUniversalInterfaceHost) gn.getMachine();
+						final UniversalInterface dual = ih.getInterfaceDuality();
+						if (gn.isActive() && dual.getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.YES) {
+							this.uiList.put(ih, new InvTracker(dual, dual.getPatterns(), dual.getTermName()));
+						}
+					}
+					else
+					{
+						final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
+						final DualityInterface dual = ih.getInterfaceDuality();
+						if (gn.isActive() && dual.getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.YES) {
+							this.diList.put(ih, new InvTracker(dual, dual.getPatterns(), dual.getTermName()));
+						}
 					}
 				}
 
 				for( final IGridNode gn : this.grid.getMachines( PartInterface.class ) )
 				{
-					final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
-					final DualityInterface dual = ih.getInterfaceDuality();
-					if( gn.isActive() && dual.getConfigManager().getSetting( Settings.INTERFACE_TERMINAL ) == YesNo.YES )
+					if(gn.getMachine() instanceof IUniversalInterfaceHost)
 					{
-						this.diList.put( ih, new InvTracker( dual, dual.getPatterns(), dual.getTermName() ) );
+						final IUniversalInterfaceHost ih = (IUniversalInterfaceHost) gn.getMachine();
+						final UniversalInterface dual = ih.getInterfaceDuality();
+						if (gn.isActive() && dual.getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.YES) {
+							this.uiList.put(ih, new InvTracker(dual, dual.getPatterns(), dual.getTermName()));
+						}
+					}
+					else
+					{
+						final IInterfaceHost ih = (IInterfaceHost) gn.getMachine();
+						final DualityInterface dual = ih.getInterfaceDuality();
+						if (gn.isActive() && dual.getConfigManager().getSetting(Settings.INTERFACE_TERMINAL) == YesNo.YES) {
+							this.diList.put(ih, new InvTracker(dual, dual.getPatterns(), dual.getTermName()));
+						}
 					}
 				}
 			}
@@ -347,6 +411,13 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 		data.setBoolean( "clear", true );
 
 		for( final Entry<IInterfaceHost, InvTracker> en : this.diList.entrySet() )
+		{
+			final InvTracker inv = en.getValue();
+			this.byId.put( inv.which, inv );
+			this.addItems( data, inv, 0, inv.server.getSizeInventory() );
+		}
+
+		for( final Entry<IUniversalInterfaceHost, InvTracker> en : this.uiList.entrySet() )
 		{
 			final InvTracker inv = en.getValue();
 			this.byId.put( inv.which, inv );
@@ -410,6 +481,14 @@ public final class ContainerInterfaceTerminal extends AEBaseContainer
 		private final IInventory server;
 
 		public InvTracker( final DualityInterface dual, final IInventory patterns, final String unlocalizedName )
+		{
+			this.server = patterns;
+			this.client = new AppEngInternalInventory( null, this.server.getSizeInventory() );
+			this.unlocalizedName = unlocalizedName;
+			this.sortBy = dual.getSortValue();
+		}
+
+		public InvTracker( final UniversalInterface dual, final IInventory patterns, final String unlocalizedName )
 		{
 			this.server = patterns;
 			this.client = new AppEngInternalInventory( null, this.server.getSizeInventory() );
